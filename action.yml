@@ -4,7 +4,10 @@ author: 'https://github.com/DeveloperRic'
 inputs:
   full_text:
     required: true
-    description: 'Text to be dumped in the .env file. (The text will be trimmed.)'
+    description: 'Text to be dumped in the .env file (the text will be trimmed). Any existing file will be overwritten.'
+  directory:
+    description: 'Directory to write the file to (defaults to .). Parent directories will NOT be created.'
+    default: '.'
 runs:
   using: 'node12'
   main: 'dist/index.js'

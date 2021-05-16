@@ -1,18 +1,40 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import { getInput, info, setFailed } from '@actions/core'
+import dedent from 'dedent'
+import * as fs from 'fs'
 
-async function run(): Promise<void> {
+export interface Args {
+  full_text: string
+  directory: string
+}
+
+export async function writeEnv(args: Args): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    if (!fs.existsSync(args.directory)) {
+      throw new Error(`Invalid directory input: ${args.directory} doesn't exist.`)
+    }
+    if (!fs.statSync(args.directory).isDirectory()) {
+      throw new Error(`Invalid directory input: ${args.directory} is not a directory.`)
+    }
+    const filePath = `${args.directory}/.env`
+    const text = dedent(args.full_text).trim()
+    fs.writeFile(filePath, text, err => {
+      if (err) return reject(err)
+      resolve()
+    })
+  })
+}
+
+export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    const args: Args = {
+      full_text: getInput('full_text'),
+      directory: getInput('directory')
+    }
+    info(`Creating .env file in ${args.directory}`)
+    await writeEnv(args)
+    info('Done.')
   } catch (error) {
-    core.setFailed(error.message)
+    setFailed(error.message)
   }
 }
 
