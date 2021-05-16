@@ -1,11 +1,10 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Create .env file'
+description: 'Create a .env file'
+author: 'https://github.com/DeveloperRic'
 inputs:
-  milliseconds: # change this
+  full_text:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Text to be dumped in the .env file. (The text will be trimmed.)'
 runs:
   using: 'node12'
   main: 'dist/index.js'

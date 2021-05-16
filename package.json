@@ -1,8 +1,7 @@
 {
-  "name": "typescript-action",
-  "version": "0.0.0",
-  "private": true,
-  "description": "TypeScript template action",
+  "name": "action-create-env",
+  "version": "1.0.0",
+  "description": "GitHub Action for creating .env files",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -15,14 +14,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git@github.com:DeveloperRic/action-create-env.git"
   },
   "keywords": [
+    "github",
     "actions",
-    "node",
-    "setup"
+    "create",
+    "env",
+    "dotenv"
   ],
-  "author": "",
+  "author": "https://github.com/DeveloperRic",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6"
