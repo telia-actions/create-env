@@ -8,6 +8,11 @@ inputs:
   directory:
     description: 'Directory to write the file to (defaults to .). Parent directories will NOT be created.'
     default: '.'
+  include_env_vars:
+    required: false
+    description: |
+      If set, environemnt vars starting with ACTION_CREATE_ENV_ will be included (i.e. ACTION_CREATE_ENV_PROD=1 will be incldued in .env as PROD=1).
+      Vars set in this way are written after <full_text>.
 runs:
   using: 'node12'
   main: 'dist/index.js'

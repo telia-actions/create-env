@@ -1,20 +1,29 @@
-import { Args, writeEnv } from '../src/main'
+import { Args, writeToEnvFile } from '../src/main'
 import * as process from 'process'
 import * as cp from 'child_process'
 import * as path from 'path'
 import * as fs from 'fs'
 
 const ARTIFACTS_PATH = path.join(__dirname, 'artifacts')
+const ENV_PREFIX = 'ACTION_CREATE_ENV_'
 
 beforeEach(() => fs.mkdirSync(ARTIFACTS_PATH))
 afterEach(() => fs.rmSync(ARTIFACTS_PATH, { recursive: true, force: true }))
+afterEach(() => {
+  Object.keys(process.env)
+    .filter(key => key.startsWith(ENV_PREFIX))
+    .forEach(key => {
+      delete process.env[key]
+    })
+})
 
 test('throws if <directory> is not found', async () => {
   const args: Args = {
     directory: `${ARTIFACTS_PATH}/this_dir_does_not_exist`,
-    full_text: ''
+    full_text: '',
+    include_env_vars: false
   }
-  await expect(writeEnv(args))
+  await expect(writeToEnvFile(args))
     .rejects
     .toThrow(`Invalid directory input: ${args.directory} doesn't exist.`)
 })
@@ -22,10 +31,11 @@ test('throws if <directory> is not found', async () => {
 test('throws if <directory> is not a directory', async () => {
   const args: Args = {
     directory: `${ARTIFACTS_PATH}/file`,
-    full_text: ''
+    full_text: '',
+    include_env_vars: false
   }
   fs.writeFileSync(args.directory, '')
-  await expect(writeEnv(args))
+  await expect(writeToEnvFile(args))
     .rejects
     .toThrow(`Invalid directory input: ${args.directory} is not a directory.`)
 })
@@ -36,9 +46,10 @@ test('creates .env', async () => {
     full_text: `
     PROD=0
     TEST=1\n
-    `
+    `,
+    include_env_vars: false
   }
-  await writeEnv(args)
+  await writeToEnvFile(args)
   const content = fs.readFileSync(`${args.directory}/.env`).toString()
   expect(content).toEqual('PROD=0\nTEST=1')
 })
@@ -52,13 +63,26 @@ test('overwrites .env', async () => {
     directory: ARTIFACTS_PATH,
     full_text: `
     PROD=0
-    `
+    `,
+    include_env_vars: false
   }
   const filePath = `${args.directory}/.env`
   fs.writeFileSync(filePath, initialText)
-  await writeEnv(args)
+  await writeToEnvFile(args)
   const content = fs.readFileSync(filePath).toString()
   expect(content).toEqual('PROD=0')
+})
+
+test('includes env vars', async () => {
+  const args: Args = {
+    directory: ARTIFACTS_PATH,
+    full_text: 'PROD=0\n', // should be trimmed
+    include_env_vars: true
+  }
+  process.env[`${ENV_PREFIX}_${ENV_PREFIX}_TEST`] = '1' // prefix should only be removed once
+  await writeToEnvFile(args)
+  const content = fs.readFileSync(`${args.directory}/.env`).toString()
+  expect(content).toEqual(`PROD=0\n_${ENV_PREFIX}_TEST=1`)
 })
 
 // shows how the runner will run a javascript action with env / stdout protocol
