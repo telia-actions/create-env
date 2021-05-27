@@ -1,4 +1,4 @@
-name: 'Create .env file'
+name: 'Create a .env file'
 description: 'Create a .env file'
 author: 'https://github.com/DeveloperRic'
 inputs:
