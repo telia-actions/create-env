@@ -85,6 +85,18 @@ test('includes env vars', async () => {
   expect(content).toEqual(`PROD=0\n_${ENV_PREFIX}_TEST=1`)
 })
 
+test('skips env vars when include_env_vars is disabled', async () => {
+  const args: Args = {
+    directory: ARTIFACTS_PATH,
+    full_text: 'PROD=0\n', // should be trimmed
+    include_env_vars: !!''
+  }
+  process.env[`${ENV_PREFIX}_TEST`] = '1'
+  await writeToEnvFile(args)
+  const content = fs.readFileSync(`${args.directory}/.env`).toString()
+  expect(content).toEqual(`PROD=0`)
+})
+
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
   process.env['INPUT_FULL_TEXT'] = 'PROD=0'

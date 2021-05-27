@@ -1,5 +1,8 @@
 name: 'Create a .env file'
 description: 'Create a .env file'
+branding:
+  icon: 'box'
+  color: 'orange'
 author: 'https://github.com/DeveloperRic'
 inputs:
   full_text:
