@@ -55,7 +55,7 @@ export async function run(): Promise<void> {
     info(`Creating .env file in ${args.directory}`)
     await writeToEnvFile(args)
     info('Done.')
-  } catch (error) {
+  } catch (error: any) {
     setFailed(error.message)
   }
 }
